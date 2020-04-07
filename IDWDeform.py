@@ -8,21 +8,23 @@
         ### </Returns>
         def IDWDeform(self):
                 np.seterr(divide="raise")
+				np.seterr(invalid="raise")
                 xyz = self.GetMeshUndeformedCoordinates()
                 dxyzSurf = self.GetDisplacements()
                 dxyzVol = np.zeros(xyz.shape)
 
                 for i in range(xyz.shape[0]):
                         try:
-                                weights = xyz[i] - self.basePoints
-                                weights = np.linalg.norm(weights, axis=1) ** (-2)
+                                r = xyz[i] - self.basePoints
+								d = np.einsum('ij,ij->i', r, r)
+								weights = d*d # Equivalent of np.linalg(...) ** 4
+								weights = 1.0/weights
                         except:
                                 # Catch the div0 if the current volume point is
                                 # also a surface point.
-                                weights = np.sum(weights, axis=1)
                                 surfInd = np.where(0.0 == weights)[0]
-                                weights = np.zeros(len(weights))
-                                weights[surfInd] = 1.0
+                                dxyzVol[i] = dxyzSurf[surfInd]
+								continue
 
                         weightSum = np.sum(weights)
                         weights = weights/weightSum

@@ -1,5 +1,0 @@
-a_i is a scalar
-phi_i is a vector with the number of dimensions being the number of base points
-psi_i(||D-D_k||) is a scalar, subscript k refers to one of the samples and its corresponding design parameters
-gamma_i,k is a scalar
-beta_i is a scalar
